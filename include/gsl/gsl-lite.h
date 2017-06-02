@@ -24,11 +24,12 @@
 #include <iterator>
 #include <limits>
 #include <memory>
-#include <ostream>
+//#include <ostream>
 #include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
+#include <initializer_list>
 
 #define  gsl_lite_VERSION "0.22.0"
 
@@ -198,7 +199,7 @@
 #endif
 
 #if gsl_CPP14_OR_GREATER || gsl_COMPILER_MSVC_VERSION >= 12
-# define gsl_HAVE_MAKE_UNIQUE  1
+//# define gsl_HAVE_MAKE_UNIQUE  1
 #endif
 
 #if gsl_CPP11_OR_GREATER || gsl_COMPILER_MSVC_VERSION >= 11
@@ -419,7 +420,7 @@ struct is_std_array : is_std_array_oracle< typename remove_cv<T>::type > {};
 #elif gsl_CONFIG_CONTRACT_VIOLATION_THROWS_V
 # define Expects( x )  ::gsl::fail_fast_assert( (x), "GSL: Precondition failure at " __FILE__ ": " gsl_STRINGIFY(__LINE__) );
 #else
-# define Expects( x )  ::gsl::fail_fast_assert( (x) )
+# define Expects( x ) assert((x) && "GSL: Precondition failure at " __FILE__ ": " gsl_STRINGIFY(__LINE__))
 #endif
 
 #if gsl_ELIDE_CONTRACT_ENSURES
@@ -427,7 +428,7 @@ struct is_std_array : is_std_array_oracle< typename remove_cv<T>::type > {};
 #elif gsl_CONFIG_CONTRACT_VIOLATION_THROWS_V
 # define Ensures( x )  ::gsl::fail_fast_assert( (x), "GSL: Postcondition failure at " __FILE__ ": " gsl_STRINGIFY(__LINE__) );
 #else
-# define Ensures( x )  ::gsl::fail_fast_assert( (x) )
+# define Ensures( x )  assert((x) && "GSL: Postcondition failure at " __FILE__ ": " gsl_STRINGIFY(__LINE__))
 #endif
 
 #define gsl_STRINGIFY(  x )  gsl_STRINGIFY_( x )
@@ -452,13 +453,6 @@ gsl_api inline gsl_constexpr14 auto fail_fast_assert( bool cond, char const * co
 
 # else
 
-gsl_api inline gsl_constexpr14 auto fail_fast_assert( bool cond ) -> void
-{
-	struct F { static gsl_constexpr14 void f(){}; };
-
-    !cond ? std::terminate() : F::f();
-}
-
 # endif
 
 #else // workaround
@@ -472,12 +466,6 @@ gsl_api inline gsl_constexpr14 void fail_fast_assert( bool cond, char const * co
 }
 
 # else
-
-gsl_api inline gsl_constexpr14 void fail_fast_assert( bool cond )
-{
-    if ( !cond )
-        std::terminate();
-}
 
 # endif
 #endif // workaround
@@ -532,10 +520,6 @@ protected:
         return std::uncaught_exceptions();
     }
 #else
-    gsl_api int uncaught_exceptions()
-    {
-        return std::uncaught_exception() ? 1 : 0;
-    }
 #endif
 
 private:
@@ -783,7 +767,8 @@ gsl_api inline T narrow( U u )
 #if gsl_CONFIG_CONTRACT_VIOLATION_THROWS_V
         throw narrowing_error();
 #else
-        std::terminate();
+//        std::terminate();
+        abort();
 #endif
     }
 
@@ -797,7 +782,8 @@ gsl_api inline T narrow( U u )
 #if gsl_CONFIG_CONTRACT_VIOLATION_THROWS_V
         throw narrowing_error();
 #else
-        std::terminate();
+//        std::terminate();
+        abort();
 #endif
     }
     return t;
@@ -2088,7 +2074,7 @@ gsl_api inline std::basic_string< typename std::remove_const<T>::type > to_strin
      std::string( spn.data(), spn.length() );
 }
 
-#else
+//#else
 
 gsl_api inline std::string to_string( string_span const & spn )
 {
@@ -2110,7 +2096,7 @@ gsl_api inline std::wstring to_string( cwstring_span const & spn )
     return std::wstring( spn.data(), spn.length() );
 }
 
-#endif // to_string()
+
 
 //
 // Stream output for string_span types
@@ -2179,7 +2165,7 @@ gsl_api std::basic_ostream< wchar_t, Traits > & operator<<( std::basic_ostream< 
 {
     return detail::write_to_stream( os, spn );
 }
-
+#endif // to_string()
 //
 // ensure_sentinel()
 //
