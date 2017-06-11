@@ -420,7 +420,7 @@ struct is_std_array : is_std_array_oracle< typename remove_cv<T>::type > {};
 #elif gsl_CONFIG_CONTRACT_VIOLATION_THROWS_V
 # define Expects( x )  ::gsl::fail_fast_assert( (x), "GSL: Precondition failure at " __FILE__ ": " gsl_STRINGIFY(__LINE__) );
 #else
-# define Expects( x ) assert((x) && "GSL: Precondition failure at " __FILE__ ": " gsl_STRINGIFY(__LINE__))
+# define Expects( x ) assert((x) && "Pre")
 #endif
 
 #if gsl_ELIDE_CONTRACT_ENSURES
@@ -428,7 +428,7 @@ struct is_std_array : is_std_array_oracle< typename remove_cv<T>::type > {};
 #elif gsl_CONFIG_CONTRACT_VIOLATION_THROWS_V
 # define Ensures( x )  ::gsl::fail_fast_assert( (x), "GSL: Postcondition failure at " __FILE__ ": " gsl_STRINGIFY(__LINE__) );
 #else
-# define Ensures( x )  assert((x) && "GSL: Postcondition failure at " __FILE__ ": " gsl_STRINGIFY(__LINE__))
+# define Ensures( x )  assert((x) && "Post")
 #endif
 
 #define gsl_STRINGIFY(  x )  gsl_STRINGIFY_( x )
