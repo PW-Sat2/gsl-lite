@@ -30,6 +30,7 @@
 #include <utility>
 #include <vector>
 #include <initializer_list>
+#include <assert.h>
 
 #define  gsl_lite_VERSION "0.22.0"
 
